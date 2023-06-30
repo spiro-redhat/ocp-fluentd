@@ -14,7 +14,7 @@ To get started apply the resources to the cluster:
 ```
 oc create -k . 
 ```
-Then export some variables to make the excercise more convenient. 
+Export some variables to make the excercise more convenient:
 
 ```
 export FLUENT_HOST=$(oc get route fluentd-logger --template='{{ .spec.host }}')
@@ -22,7 +22,7 @@ export NGINX_HOST=$(oc get route nginx-logger --template='{{ .spec.host }}')
 export TODAY=$(date '+%d-%m-%Y') 
 ```
 
-Create some post requests to the logger. Note that in fluent.conf we are only interested in the values contained in the nested message key. 
+Create some POST requests to the logger. Note that in the fluent.conf file, we are only interested in the values contained in the nested message key. 
 
 ``` 
 curl -X POST -d \
@@ -30,7 +30,7 @@ curl -X POST -d \
     http://${FLUENT_HOST}/app.log
 ```
 
-Then view the logs through nginx: 
+View the logs through nginx: 
 
 ``` 
 curl -X GET http://${NGINX_HOST}/app-${TODAY}.log
