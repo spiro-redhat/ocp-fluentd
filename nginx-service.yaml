@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-logger
+spec:
+  ports:
+  - port: 8080
+    targetPort: 8080
+  selector:
+    app: fluentd-logger
+  type: LoadBalancer
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: nginx-logger
+spec:
+  port:
+    targetPort: 8080
+  to:
+    kind: Service
+    name: nginx-logger

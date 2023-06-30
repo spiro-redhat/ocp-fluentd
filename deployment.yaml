@@ -1,0 +1,99 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fluentd-logger
+  labels:
+    app: fluentd-logger
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fluentd-logger
+  template:
+    metadata:
+      labels:
+        app: fluentd-logger
+    spec:
+      containers:
+        - name: nginx-logview
+          image: quay.io/spiro-redhat/nginx:1.25.1
+          securityContext:
+             allowPrivilegeEscalation: false
+             runAsNonRoot: true
+             capabilities:
+               drop:
+                 - "ALL"
+             seccompProfile:
+               type: RuntimeDefault
+          resources:
+            requests:
+              memory: "32Mi"
+              cpu: "1m"
+            limits:
+              memory: "64Mi"
+              cpu: "10m"
+            ports:
+              - containerPort: 8080
+          volumeMounts:
+            - name: nginx-config
+              readOnly: true
+              mountPath: /etc/nginx/
+            - name: fluentd-logs
+              readOnly: true
+              mountPath: /logs/
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 1
+          successThreshold: 1
+          failureThreshold: 3
+        - name: fluentd
+          image: quay.io/spiro-redhat/fluentd:1.16
+          imagePullPolicy: IfNotPresent
+          securityContext:
+             allowPrivilegeEscalation: false
+             runAsNonRoot: true
+             capabilities:
+               drop:
+                 - "ALL"
+             seccompProfile:
+               type: RuntimeDefault
+          resources:
+            limits:
+              memory: 200Mi
+              cpu: 100m 
+            requests:
+              cpu: 100m
+              memory: 200Mi
+          volumeMounts:
+            - name: fluentd-config
+              mountPath: /fluentd/etc/
+            - name: fluentd-logs
+              mountPath: /logs/
+      volumes:
+        - name: nginx-config
+          configMap:
+            name: nginx-config
+            items:
+            - key: nginx.conf
+              path: nginx.conf
+        - name: fluentd-config
+          configMap:
+            name: fluentd-config
+            items:
+              - key: fluent.conf
+                path: fluent.conf
+        - name: fluentd-logs
+          emptydir: {} 
