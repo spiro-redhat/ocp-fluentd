@@ -1,6 +1,6 @@
 ## OCP Fluentd ## 
 
-Experiment with Fluentd fowarding capabilities by sending your application logs to a Fleuntd http endpoint. Fluentd will write those logs to an `emptydir` volume via an output plugin. An nginx container defines a `volumeMount` on the `emptydir` and exposes the logs that Fluentd writes via a `route`. 
+Experiment with Fluentd fowarding capabilities by sending your application logs to a Fluentd http endpoint. Fluentd will write those logs to an `emptydir` volume via an output plugin. An nginx container defines a `volumeMount` on the `emptydir` and exposes the logs that Fluentd writes via a `route`. 
 
 The deployment is namespace specific, requires no special permissions  and is a fun way to experiment with Fluentd input/output plugins, filters and parsers. 
 
