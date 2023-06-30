@@ -36,7 +36,7 @@ Then view the logs through nginx:
 curl -X GET http://${NGINX_HOST}/app-${TODAY}.log
 ```
 
-Architecure: 
+Architecture: 
 
 <img src="img/fluentd-forwarder-architecture.png" style="height:auto,max-width:480">
 
